@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="ko" class="dark">
 <head>
-    <meta charset="UTF-8"> 
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Daily Life & Portfolio</title>
+    <title>My Bento Life & Portfolio</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
@@ -103,7 +103,7 @@
                     <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
                 </div>
                 <div>
-                    <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-indigo-300 bg-clip-text text-transparent" id="navHeaderTitle">My Daily Life</span>
+                    <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-indigo-300 bg-clip-text text-transparent" id="navHeaderTitle">My Daily Bento</span>
                     <span class="hidden sm:inline-block text-xs text-indigo-400/80 bg-indigo-500/10 px-2 py-0.5 rounded-full ml-2 border border-indigo-500/20">v2.0 Active</span>
                 </div>
             </div>
@@ -115,10 +115,22 @@
                     <span id="liveClock" class="font-mono font-medium">00:00:00 KST</span>
                 </div>
 
-                <button onclick="openModal('editProfileModal')" class="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-colors flex items-center gap-1.5 text-xs font-semibold" title="프로필 수정">
-                    <i data-lucide="settings" class="w-4 h-4"></i>
-                    <span>프로필 설정</span>
-                </button>
+                <!-- Admin & Profile Settings Controls -->
+                <div id="adminNavControls" class="flex items-center gap-2">
+                    <button id="adminLoginBtn" onclick="openModal('adminAuthModal')" class="p-2 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-colors flex items-center gap-1.5 text-xs font-semibold" title="관리자 로그인">
+                        <i data-lucide="lock" class="w-4 h-4 text-amber-400"></i>
+                        <span>관리자 인증</span>
+                    </button>
+                    
+                    <button id="editProfileBtn" onclick="openModal('editProfileModal')" class="admin-only hidden p-2 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition-colors flex items-center gap-1.5 text-xs font-semibold" title="프로필 수정">
+                        <i data-lucide="settings" class="w-4 h-4"></i>
+                        <span>프로필 설정</span>
+                    </button>
+
+                    <button id="adminLogoutBtn" onclick="logoutAdmin()" class="admin-only hidden p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition-colors flex items-center gap-1.5 text-xs font-semibold" title="잠그기">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -149,7 +161,7 @@
                     <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5 mb-6">
                         <div class="relative group/avatar">
                             <img id="displayAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80" alt="Avatar" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover ring-2 ring-indigo-500/40 shadow-xl group-hover/avatar:scale-105 transition-transform duration-300">
-                            <label class="absolute -bottom-1 -right-1 p-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg cursor-pointer transition-all" title="로컬 아바타 사진 변경">
+                            <label id="avatarUploadLabel" class="admin-only hidden absolute -bottom-1 -right-1 p-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg cursor-pointer transition-all" title="로컬 아바타 사진 변경">
                                 <i data-lucide="camera" class="w-3.5 h-3.5"></i>
                                 <input type="file" id="localAvatarInput" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
                             </label>
@@ -274,7 +286,7 @@
                 </div>
 
                 <!-- Add New Habit Input -->
-                <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center gap-2">
+                <div class="admin-only hidden mt-4 pt-3 border-t border-slate-800/80 flex items-center gap-2">
                     <input type="text" id="newHabitInput" placeholder="새 루틴 추가..." class="w-full bg-slate-900/90 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 transition-colors">
                     <button onclick="addNewHabit()" class="p-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 transition-colors">
                         <i data-lucide="plus" class="w-4 h-4"></i>
@@ -291,7 +303,7 @@
                         </div>
                         <h2 class="font-bold text-sm text-slate-200">오늘의 스냅 & 한 컷 메모</h2>
                     </div>
-                    <label class="cursor-pointer text-xs text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1 bg-slate-900/80 px-2.5 py-1 rounded-lg border border-slate-800">
+                    <label id="photoUploadLabel" class="admin-only hidden cursor-pointer text-xs text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1 bg-slate-900/80 px-2.5 py-1 rounded-lg border border-slate-800">
                         <i data-lucide="upload" class="w-3 h-3"></i>
                         <span>사진 교체</span>
                         <input type="file" id="todayPhotoInput" accept="image/*" class="hidden" onchange="handlePhotoUpload(event)">
@@ -309,7 +321,7 @@
                         <p class="text-xs text-slate-300 leading-relaxed bg-slate-900/60 p-3 rounded-2xl border border-slate-800/80 italic" id="todayPhotoCaption">
                             "조용한 공간에서 집중해서 새로운 아이디어를 정리한 시간. 작은 몰입이 매일 나를 발전시킨다."
                         </p>
-                        <button onclick="editPhotoCaption()" class="text-left text-xs text-indigo-400 hover:underline mt-2 flex items-center gap-1">
+                        <button id="editPhotoCaptionBtn" onclick="editPhotoCaption()" class="admin-only hidden text-left text-xs text-indigo-400 hover:underline mt-2 flex items-center gap-1">
                             <i data-lucide="edit-3" class="w-3 h-3"></i>
                             <span>캡션 수정하기</span>
                         </button>
@@ -347,7 +359,7 @@
                 </div>
 
                 <!-- Input area -->
-                <div class="flex items-center gap-2 mb-4">
+                <div class="admin-only hidden flex items-center gap-2 mb-4">
                     <input type="text" id="journalInput" placeholder="오늘 하루 어떤 특별한 생각이 있었나요?" class="w-full bg-slate-900/90 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-purple-500 transition-colors">
                     <button onclick="addJournalEntry()" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold transition-colors flex items-center gap-1 shrink-0">
                         <i data-lucide="send" class="w-3.5 h-3.5"></i>
@@ -384,7 +396,7 @@
 
                 <div class="mt-3 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
                     <span class="flex items-center gap-1.5"><i data-lucide="music" class="w-3.5 h-3.5 text-pink-400"></i> Listening: NewJeans - How Sweet</span>
-                    <button onclick="editTechBadges()" class="text-indigo-400 hover:underline">태그 편집</button>
+                    <button id="editTechBadgesBtn" onclick="editTechBadges()" class="admin-only hidden text-indigo-400 hover:underline">태그 편집</button>
                 </div>
             </div>
 
@@ -395,6 +407,24 @@
     <footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 text-center text-xs text-slate-500">
         <p>© 2026 Crafted with Gemini Canvas. Built for GitHub Pages hosting.</p>
     </footer>
+
+    <!-- Admin Authentication Modal -->
+    <div id="adminAuthModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bento-card bg-slate-900 rounded-3xl border border-slate-800 max-w-sm w-full p-6 shadow-2xl relative text-center">
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="shield-check" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-1">관리자 인증</h3>
+            <p class="text-xs text-slate-400 mb-4">프로필 및 웹사이트 설정을 변경하려면 PIN 번호를 입력하세요.<br><span class="text-indigo-400 font-mono text-[11px]">(초기 비밀번호: 1234)</span></p>
+
+            <input type="password" id="adminPinInput" maxlength="12" placeholder="PIN 번호 입력" class="w-full text-center tracking-widest bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 mb-4" onkeyup="if(event.key==='Enter') verifyAdminPin()">
+
+            <div class="flex items-center gap-2">
+                <button onclick="closeModal('adminAuthModal')" class="w-1/2 py-2.5 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold hover:bg-slate-700 transition-colors">취소</button>
+                <button onclick="verifyAdminPin()" class="w-1/2 py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-500 transition-colors">인증하기</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Profile Edit Modal -->
     <div id="editProfileModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
@@ -436,6 +466,10 @@
                         </label>
                     </div>
                 </div>
+                <div class="pt-2 border-t border-slate-800/80">
+                    <label class="block text-xs font-semibold text-amber-400 mb-1">관리자 비밀번호 (PIN) 변경</label>
+                    <input type="password" id="inputAdminPin" maxlength="12" placeholder="변경할 PIN 번호" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-amber-500">
+                </div>
             </div>
 
             <div class="mt-6 flex items-center justify-end gap-3">
@@ -452,8 +486,9 @@
     </div>
 
     <script>
-        // State store object (Clean initial state without demo data)
+        // State store object
         const defaultState = {
+            adminPin: "1234",
             profile: {
                 name: "이름을 입력하세요",
                 role: "한 줄 직함/역할을 입력하세요",
@@ -474,6 +509,9 @@
         };
 
         let state = JSON.parse(localStorage.getItem('bento_daily_state')) || defaultState;
+        if (!state.adminPin) state.adminPin = "1234";
+
+        let isAdmin = false;
 
         // Quotes pool
         const quotes = [
@@ -487,11 +525,12 @@
             // Render icons
             lucide.createIcons();
 
-            // Load State
+            // Load State & Admin UI
             renderProfile();
             renderHabits();
             renderJournals();
             renderTechBadges();
+            renderAdminUI();
             initChart();
             startLiveClock();
         });
@@ -501,8 +540,49 @@
             localStorage.setItem('bento_daily_state', JSON.stringify(state));
         }
 
-        // Avatar Upload Handler (Local file to Data URL)
+        // Admin Verification
+        function verifyAdminPin() {
+            const inputPin = document.getElementById('adminPinInput').value;
+            if (inputPin === state.adminPin) {
+                isAdmin = true;
+                closeModal('adminAuthModal');
+                document.getElementById('adminPinInput').value = '';
+                renderAdminUI();
+                renderHabits();
+                renderJournals();
+                showToast("🔓 관리자로 인증되었습니다!");
+            } else {
+                showToast("❌ 비밀번호가 올바르지 않습니다.");
+            }
+        }
+
+        function logoutAdmin() {
+            isAdmin = false;
+            renderAdminUI();
+            renderHabits();
+            renderJournals();
+            showToast("🔒 관리자 모드가 잠겼습니다.");
+        }
+
+        function renderAdminUI() {
+            const adminElements = document.querySelectorAll('.admin-only');
+            const loginBtn = document.getElementById('adminLoginBtn');
+            const logoutBtn = document.getElementById('adminLogoutBtn');
+
+            if (isAdmin) {
+                adminElements.forEach(el => el.classList.remove('hidden'));
+                loginBtn.classList.add('hidden');
+                logoutBtn.classList.remove('hidden');
+            } else {
+                adminElements.forEach(el => el.classList.add('hidden'));
+                loginBtn.classList.remove('hidden');
+                logoutBtn.classList.add('hidden');
+            }
+        }
+
+        // Avatar Upload Handler
         function handleAvatarUpload(e) {
+            if (!isAdmin) return;
             const file = e.target.files[0];
             if (!file) return;
 
@@ -512,7 +592,7 @@
                 document.getElementById('displayAvatar').src = event.target.result;
                 document.getElementById('inputAvatar').value = event.target.result;
                 saveState();
-                showToast("프로필 아바타가 로컬 이미지로 업데이트되었습니다!");
+                showToast("프로필 아바타가 업데이트되었습니다!");
             };
             reader.readAsDataURL(file);
         }
@@ -542,14 +622,19 @@
             document.getElementById('inputBio').value = state.profile.bio;
             document.getElementById('inputStatus').value = state.profile.status;
             document.getElementById('inputAvatar').value = state.profile.avatar;
+            document.getElementById('inputAdminPin').value = state.adminPin;
         }
 
         function saveProfileSettings() {
+            if (!isAdmin) return;
             state.profile.name = document.getElementById('inputName').value;
             state.profile.role = document.getElementById('inputRole').value;
             state.profile.bio = document.getElementById('inputBio').value;
             state.profile.status = document.getElementById('inputStatus').value;
             state.profile.avatar = document.getElementById('inputAvatar').value;
+
+            const newPin = document.getElementById('inputAdminPin').value.trim();
+            if (newPin) state.adminPin = newPin;
 
             saveState();
             renderProfile();
@@ -590,9 +675,10 @@
                         </div>
                         <span class="text-xs font-medium ${habit.done ? 'line-through opacity-75' : ''}">${habit.title}</span>
                     </div>
+                    ${isAdmin ? `
                     <button onclick="deleteHabit(${habit.id})" class="text-slate-600 hover:text-rose-400 transition-colors p-1">
                         <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                    </button>
+                    </button>` : ''}
                 `;
                 container.appendChild(item);
             });
@@ -611,6 +697,7 @@
         }
 
         function addNewHabit() {
+            if (!isAdmin) return;
             const input = document.getElementById('newHabitInput');
             const val = input.value.trim();
             if(!val) return;
@@ -623,6 +710,7 @@
         }
 
         function deleteHabit(id) {
+            if (!isAdmin) return;
             state.habits = state.habits.filter(h => h.id !== id);
             saveState();
             renderHabits();
@@ -643,9 +731,10 @@
                         <span class="text-[10px] text-purple-400 font-mono bg-purple-500/10 px-1.5 py-0.5 rounded border border-purple-500/20 mt-0.5 shrink-0">${j.time}</span>
                         <p class="text-slate-300 leading-relaxed">${j.text}</p>
                     </div>
+                    ${isAdmin ? `
                     <button onclick="deleteJournal(${j.id})" class="text-slate-600 hover:text-rose-400 transition-colors shrink-0">
                         <i data-lucide="x" class="w-3.5 h-3.5"></i>
-                    </button>
+                    </button>` : ''}
                 `;
                 container.appendChild(card);
             });
@@ -654,6 +743,7 @@
         }
 
         function addJournalEntry() {
+            if (!isAdmin) return;
             const input = document.getElementById('journalInput');
             const val = input.value.trim();
             if(!val) return;
@@ -667,6 +757,7 @@
         }
 
         function deleteJournal(id) {
+            if (!isAdmin) return;
             state.journals = state.journals.filter(j => j.id !== id);
             saveState();
             renderJournals();
@@ -674,6 +765,7 @@
 
         // Photo Upload Handler
         function handlePhotoUpload(e) {
+            if (!isAdmin) return;
             const file = e.target.files[0];
             if (!file) return;
 
@@ -688,6 +780,7 @@
         }
 
         function editPhotoCaption() {
+            if (!isAdmin) return;
             const newCaption = prompt("새로운 사진 캡션을 입력하세요:", state.photo.caption);
             if (newCaption !== null && newCaption.trim() !== "") {
                 state.photo.caption = newCaption;
@@ -709,6 +802,7 @@
         }
 
         function editTechBadges() {
+            if (!isAdmin) return;
             const str = prompt("콤마(,)로 구분하여 관심사 및 기술 스택을 입력하세요:", state.techBadges.join(', '));
             if (str !== null) {
                 state.techBadges = str.split(',').map(s => s.trim()).filter(Boolean);
