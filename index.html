@@ -127,6 +127,11 @@
                         <span>프로필 설정</span>
                     </button>
 
+                    <button id="changePinBtn" onclick="openModal('changePinModal')" class="admin-only hidden p-2 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-amber-400 hover:text-amber-300 transition-colors flex items-center gap-1.5 text-xs font-semibold" title="비밀번호 변경">
+                        <i data-lucide="key" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">암호 변경</span>
+                    </button>
+
                     <button id="adminLogoutBtn" onclick="logoutAdmin()" class="admin-only hidden p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition-colors flex items-center gap-1.5 text-xs font-semibold" title="잠그기">
                         <i data-lucide="log-out" class="w-4 h-4"></i>
                     </button>
@@ -479,6 +484,37 @@
         </div>
     </div>
 
+    <!-- Change Admin PIN Modal -->
+    <div id="changePinModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bento-card bg-slate-900 rounded-3xl border border-slate-800 max-w-sm w-full p-6 shadow-2xl relative text-center">
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="key-round" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-1">관리자 비밀번호 변경</h3>
+            <p class="text-xs text-slate-400 mb-4">새로운 관리자 PIN 번호를 설정하세요.</p>
+
+            <div class="space-y-3 text-left mb-5">
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-400 mb-1">현재 PIN 번호</label>
+                    <input type="password" id="currentPinInput" maxlength="12" placeholder="현재 PIN 번호 입력" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-400 mb-1">새 PIN 번호</label>
+                    <input type="password" id="newPinInput" maxlength="12" placeholder="새 PIN 번호 입력" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-400 mb-1">새 PIN 번호 확인</label>
+                    <input type="password" id="confirmPinInput" maxlength="12" placeholder="새 PIN 번호 다시 입력" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-amber-500">
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button onclick="closeModal('changePinModal')" class="w-1/2 py-2.5 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold hover:bg-slate-700 transition-colors">취소</button>
+                <button onclick="updateAdminPin()" class="w-1/2 py-2.5 rounded-xl bg-amber-600 text-white text-xs font-semibold hover:bg-amber-500 transition-colors">변경 완료</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification Container -->
     <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-indigo-600 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 text-xs font-semibold">
         <i data-lucide="check-circle" class="w-4 h-4"></i>
@@ -633,13 +669,44 @@
             state.profile.status = document.getElementById('inputStatus').value;
             state.profile.avatar = document.getElementById('inputAvatar').value;
 
-            const newPin = document.getElementById('inputAdminPin').value.trim();
-            if (newPin) state.adminPin = newPin;
-
             saveState();
             renderProfile();
             closeModal('editProfileModal');
             showToast("프로필이 성공적으로 업데이트되었습니다!");
+        }
+
+        // Dedicated Admin PIN Update Function
+        function updateAdminPin() {
+            if (!isAdmin) return;
+            const currentPin = document.getElementById('currentPinInput').value;
+            const newPin = document.getElementById('newPinInput').value.trim();
+            const confirmPin = document.getElementById('confirmPinInput').value.trim();
+
+            if (currentPin !== state.adminPin) {
+                showToast("❌ 현재 비밀번호가 일치하지 않습니다.");
+                return;
+            }
+
+            if (!newPin) {
+                showToast("❌ 새로운 비밀번호를 입력해주세요.");
+                return;
+            }
+
+            if (newPin !== confirmPin) {
+                showToast("❌ 새 비밀번호가 서로 일치하지 않습니다.");
+                return;
+            }
+
+            state.adminPin = newPin;
+            saveState();
+
+            // Clear inputs
+            document.getElementById('currentPinInput').value = '';
+            document.getElementById('newPinInput').value = '';
+            document.getElementById('confirmPinInput').value = '';
+
+            closeModal('changePinModal');
+            showToast("🔑 비밀번호가 성공적으로 변경되었습니다!");
         }
 
         // Mood Handler
